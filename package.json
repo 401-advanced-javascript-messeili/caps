@@ -7,7 +7,7 @@
     "start": "node caps.js",
     "dev": "nodemon",
     "test": "jest --coverage --verbose",
-    "lint": "eslint"
+    "lint": "eslint '**/*js'"
   },
   "repository": {
     "type": "git",

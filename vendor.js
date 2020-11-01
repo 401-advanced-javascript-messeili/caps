@@ -1,6 +1,5 @@
 const events = require('./events');
 const faker = require('faker');
-const { emit } = require('process');
 require('dotenv').config();
 
 const storeName = process.env.STORE_NAME;

@@ -1,37 +1,17 @@
-const net = require('net');
-const client = new net.Socket();
-require('dotenv').config();
+'use strict';
+const io = require('socket.io-client');
+const caps = io.connect('http://localhost:3030/caps');
 
-const HOST = process.env.HOST || 'localhost';
-const PORT = process.env.PORT || 4000;
+caps.on('connect', () => {
+  caps.on('pickup', (payload) => {
+    setTimeout(function () {
+      console.log(`picked up ${payload.orderId}`);
+      caps.emit('in-transit', payload);
+    }, 1500);
 
-client.connect(PORT, HOST, () => {
-  console.log('Driver connected');
-});
-
-client.on('data', (bufferData) => {
-  const dataObj = JSON.parse(bufferData);
-  if (dataObj.event === 'pickup') {
-    setTimeout(() => {
-      console.log(`Picking up ${dataObj.payload.orderId}`);
-      const message = JSON.stringify({
-        event: 'in-transit',
-        payload: dataObj.payload,
-      });
-      client.write(message);
-    }, 1000);
-  } else if (dataObj.event === 'in-transit') {
-    setTimeout(() => {
-      console.log(`Delivered ${dataObj.payload.orderId}`);
-      const message = JSON.stringify({
-        event: 'delivered',
-        payload: dataObj.payload,
-      });
-      client.write(message);
+    setTimeout(function () {
+      console.log(`delivered up ${payload.orderId}`);
+      caps.emit('delivered', payload);
     }, 3000);
-  }
-});
-
-client.on('close', () => {
-  console.log(`Server Closed`);
+  });
 });
